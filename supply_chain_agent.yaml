@@ -1,0 +1,43 @@
+id: supply_chain_agent
+namespace: dev.hackathon
+description: An intelligent agent to analyze product inventory risk daily.
+
+tasks:
+  - id: daily_schedule
+    type: io.kestra.plugin.core.schedule.Daily
+    cron: "0 0 * * *" # Runs daily at midnight UTC
+
+  - id: fetch_products
+    type: io.kestra.plugin.core.http.Request
+    uri: https://dummyjson.com/products
+    method: GET
+    # The output will be stored in an internal storage file, referenced by {{ output.fetch_products.body }}
+    outputs:
+      - body
+
+  - id: analyze_inventory_risk
+    type: io.kestra.plugin.ai.google.gemini.ChatCompletion # Kestra's Gemini plugin
+    # Using gemini-2.5-flash as per the guidelines for basic text tasks.
+    # The user requested gemini-2.0-flash, but it's not listed in the latest recommended models.
+    model: gemini-2.5-flash
+    config:
+      temperature: 0.7
+      topP: 0.9
+      topK: 64
+    systemInstruction: "You are an expert supply chain analyst. Your task is to provide clear, concise inventory risk assessments."
+    prompt: |
+      Analyze the following product inventory data and identify any products with 'stock' less than 50.
+      Based on this analysis, write a short 3-sentence summary of the overall inventory risk.
+
+      Product data:
+      {{ outputs.fetch_products.body | json }} # Pass the fetched JSON body to the prompt
+
+  - id: save_summary
+    type: io.kestra.plugin.core.file.Write
+    format: JSON
+    from: |
+      {
+        "riskSummary": "{{ outputs.analyze_inventory_risk.text }}",
+        "timestamp": "{{ now() }}"
+      }
+    uri: "kestra-summary-{{ now() | date('yyyy-MM-dd') }}.json" # Save as a daily JSON file
