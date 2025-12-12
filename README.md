@@ -1,12 +1,24 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# Agent Name: "The Sentinel: Intelligent Supply Chain Guardian"
 
-# Run and deploy your AI Studio app
+## The Real-World Problem:
 
-This contains everything you need to run your app locally.
+Small businesses struggle to track competitor pricing and supply chain disruptions (news, weather, strikes) because they can't afford expensive analysts.
 
-View your app in AI Studio: https://ai.studio/apps/drive/1bStuAj04JSBycmDdOYQ-gmKf6yc6LKcy
+## What Sentinel Agent does:
+
+**Monitors:** The Agent (Kestra) runs every morning.
+
+**Scrapes:** It fetches product prices from 3 competitor websites and "supply chain news" from RSS feeds.
+
+**Reasons (Gemini):** It uses Google Gemini to summarize the news ("Is there a disruption risk?") and compare prices.
+
+**Acts:** If a risk is high, it auto-drafts an email to suppliers. Finally, it pushes a daily report to a public Vercel dashboard.
+
+
+## Run and deploy the app
+
+This contains everything you need to run the app locally.
+
 
 ## Run Locally
 
